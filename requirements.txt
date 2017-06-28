@@ -1,0 +1,7 @@
+bs4
+cfscrape
+requests
+furl
+html5lib
+lxml
+demjson
