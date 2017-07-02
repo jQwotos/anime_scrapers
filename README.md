@@ -3,13 +3,14 @@
 Anime scrapers is a collection of scrapers that have been all unified.
 
 ## Table of Contents
-- [Index](#Index)
-- [Functions](#Functions)
-  - [Handlers](#Handlers)
-  - [Individual Scraper Functions](#Individual-Scraper-Functions)
-- [Contributing](#Contributing)
-    - [URL Handling (matching_urls)](#URLHandling)
-- [Credits](#Credits)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Functions](#functions)
+  - [Handlers](#handlers)
+  - [Individual Scraper Functions](#individual-scraper-functions)
+- [Contributing](#contributing)
+    - [URL Handling (matching_urls)](#url-handling-matching_urls)
+- [Credits](#credits)
 
 ## Installation
 
