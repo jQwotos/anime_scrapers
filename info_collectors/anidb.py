@@ -1,36 +1,50 @@
 import requests
+import os
 from bs4 import BeautifulSoup
+from difflib import SequenceMatcher
 
 # Constants
 BASE_URL = "http://api.anidb.net:9001/httpapi?request=anime"
-SEARCH_URL = "http://anisearch.outrance.pl/"  # Thank you, whoever created this
+BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + "/.."
+SEARCH_FILE = os.path.join(BASE_PATH, "anime-titles.xml")
 IMAGE_URL = "http://img7.anidb.net/pics/anime/"
 CLIENT = "fadedanimefinder"
 CLIENT_VERSION = 1
+MIN_SIMILARITY_RATIO = 0.8
+
+
+def _similar(original_txt, matched_txt):
+    return SequenceMatcher(None, original_txt, matched_txt).ratio()
 
 
 def search(query, strict=False):
     '''
-    Search for a particular anime among the DB. Enabling strict will display
-    only animes containing the exact query.
+    Search for a particular anime among the DB.
+    In this module, `strict` is a dummy parameter, and does not do anything.
     Returns a list which contains a dict, containing the show ID and different
     names. Use that ID to get detailed info via getDetailedInfo(ID).
     '''
-    request = requests.get(SEARCH_URL, params={
-        "task": "search",
-        "query": query if not strict else str("\\"+query),
-        "langs": "x-jat,en,ja"
-    })
-    request.raise_for_status()
-    result_page = BeautifulSoup(request.text, "xml").animetitles
+    with open(SEARCH_FILE, "rb") as f:
+        search_contents = f.read()
+    result_page = BeautifulSoup(search_contents, "xml").animetitles
 
     results = list()
+    ratio_list = list()
     for anime in result_page.findAll("anime"):
+        highest_ratio = 0
+        for title in anime.findAll("title"):
+            ratio = _similar(query, title.string)
+            if ratio > MIN_SIMILARITY_RATIO:
+                if ratio > highest_ratio:
+                    highest_ratio = ratio
+        if not highest_ratio:
+            continue
+        ratio_list.append(highest_ratio)
         id = int(anime['aid'])
         titles = [title.string for title in
                   anime.findAll("title", attrs={"type": ["main", "official"]})]
         results.append({"id": id, "titles": titles})
-    return results
+    return [x for y, x in sorted(list(zip(ratio_list, results)), reverse=True)]
 
 
 def getDetailedInfo(id):
