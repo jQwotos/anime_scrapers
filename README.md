@@ -37,7 +37,7 @@ cd <To the anime_scrapers directory> OR OPEN THE TERMINAL IN THE anime_scrapers 
 python3
 # The Python terminal will run, type/copy-paste everything after '>>> ' below.
 >>> from init_search import download_list
->>> download_list.download_list()
+>>> download_list.get_file()
 ```
 
 anime_scrapers is the backend that is to be used by other applications. You can however use it directly if you want by using the python shell, but it's better to use an application.
