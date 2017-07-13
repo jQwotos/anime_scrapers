@@ -1,10 +1,12 @@
 from datetime import date
 import requests
+import os
 
 
-INFO_FILE = "last_download.txt"
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
+INFO_FILE = os.path.join(BASE_PATH, "last_download.txt")
 DOWNLOAD_URL = "http://anidb.net/api/anime-titles.xml.gz"
-DOWNLOAD_FILE = "anime-titles.xml"
+DOWNLOAD_FILE = os.path.join(BASE_PATH, "anime-titles.xml")
 
 
 class DownloadList:

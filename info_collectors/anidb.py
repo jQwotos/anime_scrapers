@@ -2,15 +2,19 @@ import requests
 import os
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
+import sys
 
 # Constants
 BASE_URL = "http://api.anidb.net:9001/httpapi?request=anime"
-BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + "/.."
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 SEARCH_FILE = os.path.join(BASE_PATH, "anime-titles.xml")
 IMAGE_URL = "http://img7.anidb.net/pics/anime/"
 CLIENT = "fadedanimefinder"
 CLIENT_VERSION = 1
 MIN_SIMILARITY_RATIO = 0.8
+
+sys.path.append(BASE_PATH)
+from _init_anidb import download_list
 
 
 def _similar(original_txt, matched_txt):
@@ -24,6 +28,8 @@ def search(query, strict=False):
     Returns a list which contains a dict, containing the show ID and different
     names. Use that ID to get detailed info via getDetailedInfo(ID).
     '''
+    download_list.get_file()
+
     with open(SEARCH_FILE, "rb") as f:
         search_contents = f.read()
     result_page = BeautifulSoup(search_contents, "xml").animetitles

@@ -30,16 +30,6 @@ Anime scrapers is a collection of scrapers that have been all unified.
 
 ## Usage
 
-**IMPORTANT:** Before using the `info_handler` module, please run `init_search.py` (recommended to run every two weeks. Run at MAXIMUM once per day.)
-To run it, use this command:
-```
-cd <To the anime_scrapers directory> OR OPEN THE TERMINAL IN THE anime_scrapers DIRECTORY.
-python3
-# The Python terminal will run, type/copy-paste everything after '>>> ' below.
->>> from init_search import download_list
->>> download_list.get_file()
-```
-
 anime_scrapers is the backend that is to be used by other applications. You can however use it directly if you want by using the python shell, but it's better to use an application.
 
 ### Functions
