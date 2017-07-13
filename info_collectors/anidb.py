@@ -50,7 +50,9 @@ def search(query, strict=False):
         titles = [title.string for title in
                   anime.findAll("title", attrs={"type": ["main", "official"]})]
         results.append({"id": id, "titles": titles})
-    return [x for y, x in sorted(list(zip(ratio_list, results)), reverse=True)]
+    return [x for (y, x) in
+            sorted(list(zip(ratio_list, results)),
+                   key=lambda pair: pair[0], reverse=True)]
 
 
 def getDetailedInfo(id):
