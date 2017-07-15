@@ -30,4 +30,8 @@ class ModuleSearch(object):
         directory = os.path.dirname(fileLocation)
         self.module_location = os.path.join(directory, '..', location)
         self.modules = glob.glob("%s/*.py" % (self.module_location))
+        for i in range(len(self.modules)):  # Delete modules beginning with '_'
+            module = self.modules[i]
+            if module[module.rfind("/") + 1] == "_":
+                del self.modules[i]
         self.modules = self._load_modules()
