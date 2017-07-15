@@ -11,7 +11,7 @@ SEARCH_FILE = os.path.join(BASE_PATH, "anime-titles.xml")
 IMAGE_URL = "http://img7.anidb.net/pics/anime/"
 CLIENT = "fadedanimefinder"
 CLIENT_VERSION = 1
-MIN_SIMILARITY_RATIO = 0.8
+MIN_SIMILARITY_RATIO = 0.5
 
 sys.path.append(BASE_PATH)
 from _init_anidb import download_list
