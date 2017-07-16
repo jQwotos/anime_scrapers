@@ -154,15 +154,15 @@ def scrape_all_show_sources(link):
 
 matching_urls = [
     {
-        'urls': [r'https://ww[0-9]+.gogoanime.io/category/(.*)'],
+        'urls': [r'https://(.*)gogoanime.io/category/(.*)'],
         'function': scrape_all_show_sources,
     },
     {
-        'urls': [r'https://ww[0-9]+.gogoanime.io//search.html?keyword=(.*)'],
+        'urls': [r'https://(.*)gogoanime.io//search.html?keyword=(.*)'],
         'function': search,
     },
     {
-        'urls': [r'https://ww1.gogoanime.io/(.*)-episode-([0-9]+)'],
+        'urls': [r'https://(.*)gogoanime.io/(.*)-episode-([0-9]+)'],
         'function': _scrape_video_sources,
     }
 ]
