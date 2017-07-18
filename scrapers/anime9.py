@@ -22,6 +22,15 @@ class NineAnimeUrlExtender:
     support the original creator
 
     '''
+    _ts_value_regex = re.compile(r"<body.*data-ts\s*=['\"](\d+)['\"]")
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def get_ts_value(cls, content):
+        return cls._ts_value_regex.findall(content)[0]
+
     @classmethod
     def get_extra_url_parameter(cls, id, update, ts):
         DD = 'gIXCaNh'
@@ -37,7 +46,7 @@ class NineAnimeUrlExtender:
     def _s(cls, t):
         i = 0
         for (e, c) in enumerate(t):
-            i += ord(c) * e + e
+            i += ord(c) * e
         return i
 
     @classmethod
