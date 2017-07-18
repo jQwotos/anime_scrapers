@@ -1,4 +1,3 @@
-import re
 import logging
 
 import requests
@@ -22,14 +21,6 @@ class NineAnimeUrlExtender:
     support the original creator
 
     '''
-    _ts_value_regex = re.compile(r"<body.*data-ts\s*=['\"](\d+)['\"]")
-
-    def __init__(self):
-        pass
-
-    @classmethod
-    def get_ts_value(cls, content):
-        return cls._ts_value_regex.findall(content)[0]
 
     @classmethod
     def get_extra_url_parameter(cls, id, update, ts):
