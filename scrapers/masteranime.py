@@ -20,6 +20,7 @@ POSTER_URL = ("%s/poster/3/" % BASE_URL).replace("www", "cdn")
 
 showid_pat = re.compile("%s([0-9]+)-" % (SHOW_URL,))
 sources_pat = re.compile('mirrors:(.*?), auto_update: \[1')
+sources_pat_2 = re.compile('\[(.*)\]')
 
 def _combine_link(url):
     return ("%s%s" % (BASE_URL, url,)).replace(' ', '')
@@ -60,7 +61,14 @@ def search(query):
 def _scrape_show_id(link):
     return re.findall(showid_pat, link)[0]
 
-def _scrape_single_video_source(data):
+def _scrape_single_video_source(data, **kwargs):
+    if 'secondary' in kwargs and kwargs['secondary'] is True:
+        return {
+            'link': data['src'],
+            'quality': data['res'],
+            'type': data['type'],
+        }
+
     combined = '%s%s' % (data['host']['embed_prefix'], data['embed_id'])
     if data['host']['embed_suffix'] is not None:
         combined = "%s%s" % (combined, data['host']['embed_suffix'])
@@ -74,12 +82,21 @@ def _scrape_single_video_source(data):
 def _scrape_video_sources(link):
     logging.info("Scraping sources for %s under masteranime." % (link,))
     data = BeautifulSoup(requests.get(link).content, 'html.parser')
-    sources = str(data.findAll("script")[3])
-    sources = re.findall(sources_pat, sources)[0]
-    sources = demjson.decode(sources)
+    scripts = data.findAll("script")
+    sources = str(scripts[3])
+    encoded_sources = re.findall(sources_pat, sources)
 
-    # return list(map(lambda x: _scrape_single_video_source(x), sources))
-    return [_scrape_single_video_source(x) for x in sources]
+    # If the sources are located in the first primary script location
+    if len(encoded_sources) > 0:
+        sources = demjson.decode(encoded_sources[0])
+        return [_scrape_single_video_source(x) for x in sources]
+    # If the sources are in the second location
+    else:
+        script = str(scripts[6])
+        encoded_sources = re.findall(sources_pat_2, script)
+        encoded_sources = "[%s]" % (encoded_sources[0],)
+        sources = demjson.decode(encoded_sources)
+        return [_scrape_single_video_source(x, secondary=True) for x in sources]
 
 
 def _parse_list_single(data, link):
