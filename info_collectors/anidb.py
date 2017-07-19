@@ -87,10 +87,7 @@ def getDetailedInfo(id):
         "permanent_rating": float(result_page.find("ratings")
                                   .find("permanent").string),
         "image_url": IMAGE_URL + result_page.find("picture").string,
-        "description": result_page.find("description").string,
-        "recommendations": [{rcd['type']: rcd.string} for rcd in
-                            result_page.find("recommendations")
-                            .findAll("recommendation")]
+        "description": result_page.find("description").string
     }
     return results
 

@@ -1,4 +1,3 @@
-import re
 import logging
 
 import requests
@@ -22,6 +21,7 @@ class NineAnimeUrlExtender:
     support the original creator
 
     '''
+
     @classmethod
     def get_extra_url_parameter(cls, id, update, ts):
         DD = 'gIXCaNh'
@@ -37,7 +37,7 @@ class NineAnimeUrlExtender:
     def _s(cls, t):
         i = 0
         for (e, c) in enumerate(t):
-            i += ord(c) * e + e
+            i += ord(c) * e
         return i
 
     @classmethod
