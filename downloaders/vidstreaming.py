@@ -1,5 +1,6 @@
 import re
 import os
+import sys
 import logging
 
 import requests
@@ -7,7 +8,9 @@ import requests
 from furl import furl
 from bs4 import BeautifulSoup
 
-from anime_scrapers.downloaders import mp4
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(BASE_PATH)
+import mp4
 
 site_name = 'vidstream'
 
