@@ -1,21 +1,26 @@
-import glob
-import imp
 import logging
-import os
-import re
-
-from random import randint
 
 from .templates.module_search import ModuleSearch
 
 
 class DownloadHandler(ModuleSearch):
     # Deals with resolving downloading of files
-    # Automatically creates file names, and
-    # resolves with modules in downloaders
-    # folder.
     def __init__(self):
         self._get_modules('downloaders')
+
+    def single_download(self, link, abs_path):
+        """
+        Download a single episode.
+        'link' is the full link of it (get it with scraper_handler).
+        'abs_path' is full path + filename of downloaded file, example -
+        "/home/User/MyDownloadedEpisode.mp4"
+        """
+        for module in self.modules:
+            if self._try_match_module(link, module):
+                if module.download(link, abs_path):
+                    return True
+                return False
+        return False
 
     def resolve(self, data):
         logging.info(
