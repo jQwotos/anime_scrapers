@@ -4,12 +4,20 @@ Anime scrapers is a collection of scrapers that have been all unified.
 
 ## Table of Contents
 - [Installation](#installation)
+  - [Mac / OSX](#mac-osx)
+  - [General Installation](#general-installation)
 - [Usage](#usage)
   - [Functions](#functions)
-  - [Handlers](#handlers)
+    - [Handlers](#handlers)
+      - [Scraper Handler](#scraper_handler)
+      - [Download Handler](#download_handler)
+      - [Info Handler](#info_handler)
   - [Individual Scraper Functions](#individual-scraper-functions)
 - [Contributing](#contributing)
     - [URL Handling (matching_urls)](#url-handling-matching_urls)
+    - [Adding a Scraper](#adding-a-scraper)
+    - [Adding a Downloader](#adding-a-downloader)
+    - [Adding an Info Collector](#adding-an-information-collector)
 - [Credits](#credits)
 
 ## Installation
