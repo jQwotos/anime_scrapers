@@ -4,6 +4,7 @@ import logging
 import os
 import re
 
+
 class ModuleSearch(object):
     def _load_single_module(self, f):
         return imp.load_source(f[:-3], f)
@@ -16,8 +17,10 @@ class ModuleSearch(object):
 
     def _try_match_module_section(self, link, section):
         urls = section['urls']
-        matches = [section['function'] for x in urls
-                    if self._try_match_url(link, x) is not False]
+        matches = [
+            section['function'] for x in urls
+            if self._try_match_url(link, x) is not False
+        ]
         return True if len(matches) > 0 else False
 
     def _try_match_module(self, link, module):
@@ -25,13 +28,24 @@ class ModuleSearch(object):
         return [x['function'] for x in sections
                 if self._try_match_module_section(link, x) is not False]
 
+    def __is_underscore(self, f):
+        if f[f.rfind('/') + 1] == "_":
+            return True
+        return False
+
     def _get_modules(self, location):
         fileLocation = os.path.realpath(__file__)
         directory = os.path.dirname(fileLocation)
         self.module_location = os.path.join(directory, '..', location)
         self.modules = glob.glob("%s/*.py" % (self.module_location))
+        self.modules = [
+            module for module in self.modules
+            if not self.__is_underscore(module)
+        ]
+        '''
         for i in range(len(self.modules)):  # Delete modules beginning with '_'
             module = self.modules[i]
             if module[module.rfind("/") + 1] == "_":
                 del self.modules[i]
+        '''
         self.modules = self._load_modules()
