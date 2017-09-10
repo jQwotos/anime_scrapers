@@ -12,8 +12,8 @@ SEARCH_URL = "%s/search.php" % (BASE_URL,)
 
 source_pat = re.compile("<source src='(.*?)'")
 epnum_pat = re.compile('e=(.*?)$')
-status_pat = re.compile('<b>Status:</b> (.*?)<br/>')
-released_pat = re.compile('<b>Year:</b> ([0-9]+)')
+status_pat = re.compile('<div class="textd">Status:</div><div class="textc">(.*?)</div>')
+released_pat = re.compile('<div class="textd">Year:</div><div class="textc">(.*)</div>')
 
 
 def _combine_link(url):
@@ -54,7 +54,7 @@ def search(query):
         }
     ]
     '''
-    logging.info("A query for %s was made under animeheave" % (query,))
+    logging.info("A query for %s was made under animeheaven" % (query,))
     params = {'q': query}
     data = requests.get(SEARCH_URL, params=params).content
     data = BeautifulSoup(data, 'html.parser')
