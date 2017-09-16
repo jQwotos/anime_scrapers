@@ -49,7 +49,7 @@ def download(link, filename):
 matching_urls = [
     {
         'urls': [
-            r'http://(.*).animeheaven.eu/video/(.*).mp4\?ww',
+            r'http://(.*).animeheaven.eu/video/(.*).mp4(.*)',
             r'https://[0-9]+.bp.blogspot.com(.*)',
         ],
         'function': download,
