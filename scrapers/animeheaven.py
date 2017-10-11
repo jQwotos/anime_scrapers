@@ -15,6 +15,8 @@ epnum_pat = re.compile('e=(.*?)$')
 status_pat = re.compile('<div class="textd">Status:</div><div class="textc">(.*?)</div>')
 released_pat = re.compile('<div class="textd">Year:</div><div class="textc">(.*)</div>')
 
+def _safe_index(list, index):
+    return list[index] if len(list) > index else None
 
 def _combine_link(url):
     # Combines the relative url with the base url
@@ -83,7 +85,10 @@ def _scrape_single_video_source(data):
 
 
 def _scrape_epNum(url):
-    return re.findall(epnum_pat, url)[0]
+    return _safe_index(
+        re.findall(epnum_pat, url),
+        0
+    )
 
 
 def _scrape_video_sources(link):
@@ -113,15 +118,27 @@ def _scrape_title(data):
 def _scrape_released(data):
     # Takes in bs4 show page and
     # returns released year as string
-    box = data.findAll("div", {"class": 'infodes2'})[1]
-    return re.findall(released_pat, str(box))[0]
+    box = _safe_index(
+        data.findAll("div", {"class": 'infodes2'}),
+        1
+    )
+    return _safe_index(
+        re.findall(released_pat, str(box)),
+        0
+    )
 
 
 def _scrape_status(data):
     # Takes in bs4 show page and
     # return status of the show
-    box = data.findAll("div", {"class": "infodes2"})[1]
-    return re.findall(status_pat, str(box))[0]
+    box = _safe_index(
+        data.findAll("div", {"class": "infodes2"}),
+        1
+    )
+    return _safe_index(
+        re.findall(status_pat, str(box)),
+        0
+    )
 
 
 def scrape_all_show_sources(link):
