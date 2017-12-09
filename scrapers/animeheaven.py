@@ -10,7 +10,8 @@ site_name = 'animeheaven'
 BASE_URL = "http://animeheaven.eu"
 SEARCH_URL = "%s/search.php" % (BASE_URL,)
 
-source_pat = re.compile("<source src='(.*?)'")
+# source_pat = re.compile("<source src='(.*?)'")
+source_pat = re.compile("document.write\(\"<a class='an'  href='(.*?)'")
 epnum_pat = re.compile('e=(.*?)$')
 status_pat = re.compile('<div class="textd">Status:</div><div class="textc">(.*?)</div>')
 released_pat = re.compile('<div class="textd">Year:</div><div class="textc">(.*)</div>')
@@ -75,9 +76,14 @@ def _parse_list_multi(data):
     return [_parse_list_single(x) for x in episodes]
 
 
+def _hex_source_to_str(source_url):
+    return bytes(source_url, 'utf-8').decode('unicode_escape')
+
+
 def _scrape_single_video_source(data):
+    source_url = re.findall(source_pat, str(data))
     return {
-        'link': data,
+        'link': _hex_source_to_str(source_url[0]) if len(source_url) > 0 else None,
         'type': 'mp4',
     }
 
@@ -89,19 +95,14 @@ def _scrape_epNum(url):
 def _scrape_video_sources(link):
     # Scrapes details on a specific
     # episode of a show based on link
-    logging.info("Scraping video sources for %s under animeheaven" % (link,))
-    data = BeautifulSoup(requests.get(link).content, 'html.parser')
-    sources = data.findAll("div", {'class': 'c'})
-    sources = re.findall(source_pat, str(data))
+    data = BeautifulSoup(requests.get(link).content)
+    logging.info("Scraping video sources for %s under animeheaven" % (link,))    # test = data.findall("div", {'class': 'centerf2'})
+    sources = data.find("div", {'class': 'centerf2'}).findAll('script')
 
     return {
         'epNum': _scrape_epNum(link),
-        'sources': list(map(
-            lambda x: _scrape_single_video_source(x),
-            sources)
-        ),
+        'sources': [_scrape_single_video_source(x) for x in sources],
     }
-
 
 def _scrape_title(data):
     # Takes in bs4 show page
