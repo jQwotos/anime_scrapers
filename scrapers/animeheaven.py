@@ -89,7 +89,8 @@ def _scrape_single_video_source(data):
 
 
 def _scrape_epNum(url):
-    return re.findall(epnum_pat, url)[0]
+    epNum = re.search(epnum_pat, url)
+    return epNum.group() if epNum is not None else None
 
 def _parse_multi_video_sources(data):
     return [_scrape_video_sources(x) for x in data]
@@ -117,15 +118,21 @@ def _scrape_title(data):
 def _scrape_released(data):
     # Takes in bs4 show page and
     # returns released year as string
-    box = data.findAll("div", {"class": 'infodes2'})[1]
-    return re.findall(released_pat, str(box))[0]
+    box = data.findAll("div", {"class": 'infodes2'})
+    if len(box) < 1: return None
+    box = box[1]
+    released_date = re.search(released_pat, str(box))
+    return released_date.group() if released_date is not None else Noneß
 
 
 def _scrape_status(data):
     # Takes in bs4 show page and
     # return status of the show
-    box = data.findAll("div", {"class": "infodes2"})[1]
-    return re.findall(status_pat, str(box))[0]
+    box = data.findAll("div", {"class": "infodes2"})
+    if len(box) < 1: return Noneß
+    box = box[1]
+    status = re.search(status_pat, str(box))
+    return status.group() if status is not None else None
 
 
 def scrape_all_show_sources(link):
