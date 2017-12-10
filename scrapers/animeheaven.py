@@ -11,7 +11,7 @@ BASE_URL = "http://animeheaven.eu"
 SEARCH_URL = "%s/search.php" % (BASE_URL,)
 
 # source_pat = re.compile("<source src='(.*?)'")
-source_pat = re.compile("document.write\(\"<a class='an'  href='(.*?)'")
+source_pat = re.compile("document.write\(\"<a  class='an' href='(.*?)'")
 epnum_pat = re.compile('e=(.*?)$')
 status_pat = re.compile('<div class="textd">Status:</div><div class="textc">(.*?)</div>')
 released_pat = re.compile('<div class="textd">Year:</div><div class="textc">(.*)</div>')
@@ -90,6 +90,9 @@ def _scrape_single_video_source(data):
 
 def _scrape_epNum(url):
     return re.findall(epnum_pat, url)[0]
+
+def _parse_multi_video_sources(data):
+    return [_scrape_video_sources(x) for x in data]
 
 
 def _scrape_video_sources(link):
