@@ -90,7 +90,7 @@ def _scrape_single_video_source(data):
 
 def _scrape_epNum(url):
     epNum = re.search(epnum_pat, url)
-    return epNum.group() if epNum is not None else None
+    return epNum.group().replace('e=', '') if epNum is not None else None
 
 def _parse_multi_video_sources(data):
     return [_scrape_video_sources(x) for x in data]
