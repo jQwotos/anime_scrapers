@@ -9,12 +9,12 @@ from bs4 import BeautifulSoup
 
 types = ['iframe']
 
-MY_CLOUD_PAT = re.compile('<meta property="og:image" content="//(.*?)"')
+MY_CLOUD_PAT = re.compile('<meta property="og:image" content="(.*?)"')
 
 resolutions = ['1080', '720', '480', '360']
 
 
-def _pick_highest_res(link):
+def _pick_highest_res(link, headers=None):
     logging.info(
         "Picking the highest res for '%s' under mycloud downloader."
         % (link,)
@@ -24,13 +24,13 @@ def _pick_highest_res(link):
         trialLink = _increment_link(link, testIncrement).replace(
             "{{RESOLUTION}}", res
         )
-        if requests.get(trialLink, stream=True).status_code == 200:
+        if requests.get(trialLink, stream=True, headers=headers).status_code == 200:
             logging.info("Highest quality possible is %s" % (res))
             return link.replace("{{RESOLUTION}}", res)
     # raise ValueError, "Can't find a proper resolution for %s." % (link,)
 
 
-def _get_direct_link(link):
+def _get_direct_link(link, headers=None):
     logging.info(
         "Getting direct link for '%s' under mycloud downloader."
         % (link,)
@@ -42,9 +42,11 @@ def _get_direct_link(link):
         'preview.jpg',
         'hls/{{RESOLUTION}}/{{RESOLUTION}}-{{INCREMENT}}.ts'
     )
-    actualLink = "https://%s" % (actualLink,)
-
-    return _pick_highest_res(actualLink)
+    logging.info(
+        "Resolved link '%s' under mycloud downloader to '%s'"
+        % (link, actualLink,)
+    )
+    return _pick_highest_res(actualLink, headers)
 
 
 def _increment_link(link, increment):
@@ -52,8 +54,9 @@ def _increment_link(link, increment):
 
 
 def download(link, fname, **passedArgs):
+    headers = {'Referer': link}
     # Downloads a file from MyCloud based on link and filename
-    directLink = _get_direct_link(link)
+    directLink = _get_direct_link(link, headers)
     logging.info("Recieved link of '%s' from '%s'" % (directLink, link,))
     increment = 0
     finished = False
@@ -65,12 +68,12 @@ def download(link, fname, **passedArgs):
             newLink = _increment_link(directLink, increment)
             while True:
                 try:
-                    download = requests.get(newLink, stream=True, timeout=10)
+                    download = requests.get(newLink, stream=True, timeout=10, headers=headers)
                     break
-                except:
+                except Exception as e:
                     logging.error(
-                        "Connection timed out while downloading block %i."
-                        % (increment)
+                        "Connection timed out while downloading block %i. With error %s"
+                        % (increment, str(e),)
                     )
             if download.status_code == 200:
                 f.write(download.content)
@@ -94,7 +97,9 @@ def download(link, fname, **passedArgs):
 
 matching_urls = [
     {
-        'urls': [],
+        'urls': [
+            r'https://mcloud.to/embed/(.*)&autostart=true',
+        ],
         'function': download,
     }
 ]
