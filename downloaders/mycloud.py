@@ -99,6 +99,7 @@ matching_urls = [
     {
         'urls': [
             r'https://mcloud.to/embed/(.*)&autostart=true',
+            r'https://mcloud.to/embed/(.*)',
         ],
         'function': download,
     }
