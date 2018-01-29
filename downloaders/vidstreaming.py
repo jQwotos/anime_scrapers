@@ -19,6 +19,8 @@ DOWNLOAD_URL = "https://vidstream.co/download"
 
 qualities = ['1080', '720', '480', '360']
 
+STREAMING_PAT = '\?id=([a-zA-Z0-9]+?)(?:=|$)'
+
 
 def _try_match_url(link, matchingURL):
     return True if re.match(matchingURL, link) is not None else False
@@ -44,8 +46,9 @@ def resolve(link):
 def download(link, fname):
     logging.info("Starting download for '%s' under vidstreaming." % (link,))
     sources = resolve(link)['sources']
+    logging.info("Recieved %i sources" % (len(sources)))
     if len(sources) > 0:
-        source = sources[-1]['link']
+        source = sources[0]['link']
     else:
         logging.critical("Can't find sources on vidstreaming!")
         return False
@@ -110,13 +113,31 @@ def _parse_list_embed_multi(data):
 
 def _scrape_video_embed(link):
     data = BeautifulSoup(requests.get(link).content, 'html.parser')
-    return {
+    result = {
         'sources': _parse_list_embed_multi(data),
     }
+    if len(result['sources']) == 0:
+        logging.info('Falling back to legacy downloader for %s' % (link,))
+        result['sources'] = _scrape_video_sources(link)
+    return result
+
+def _fix_link(link):
+    fixed_link = "http:" + link
+    return _scrape_video_embed(fixed_link)
+
+def _scrape_streaming(link):
+    id = re.search(STREAMING_PAT, link)
+    id = id.group(1) if id is not None else None
+
+    if id:
+        return _scrape_video_sources_id(id)
+
+    return None
 
 matching_urls = [
     {
         'urls': [
+            r'//vidstreaming.io/streaming.php\?id=(.*)&title=(.*)',
             r'https://vidstream.co/embed.php\?(.*)',
             r'https://vidstreaming.io/embed.php\?id=(.*)',
             ],
@@ -137,5 +158,11 @@ internal_matching_urls = [
             r'https://vidstreaming.io/embed.php\?id=(.*)',
         ],
         'function': _scrape_video_embed,
+    },
+    {
+        'urls': [
+            r'//vidstreaming.io/streaming.php\?id=(.*)&title=(.*)',
+        ],
+        'function': _scrape_streaming,
     }
 ]
