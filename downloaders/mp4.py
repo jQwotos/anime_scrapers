@@ -26,12 +26,12 @@ class Timer:
         )
 
 
-def download(link, filename):
+def download(link, filename, getMethod=requests.get):
     logging.info("Starting download for %s." % (link,))
     tempName = "%s.tmp" % (filename,)
 
     with open(tempName, 'wb') as f:
-        request = requests.get(link, stream=True)
+        request = getMethod(link, stream=True)
 
         # timer = Timer(request)
 

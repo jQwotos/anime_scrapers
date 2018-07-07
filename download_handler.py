@@ -1,4 +1,5 @@
 import logging
+import requests
 
 from .templates.module_search import ModuleSearch
 
@@ -22,7 +23,7 @@ class DownloadHandler(ModuleSearch):
                 return False
         return False
 
-    def resolve(self, data):
+    def resolve(self, data, getMethod=requests.get):
         logging.info(
             "Trying to resolve '%s'"
             % (data['epNum'])
@@ -40,7 +41,7 @@ class DownloadHandler(ModuleSearch):
                     )
                     # PEP8 Too long
                     fileName = "%s.mp4" % (data['epNum'],) if 'epNum' in data else source
-                    if module.download(source['link'], fileName):
+                    if module.download(source['link'], fileName, getMethod=getMethod):
                         break
 
 download_handler = DownloadHandler()

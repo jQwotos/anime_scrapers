@@ -81,11 +81,11 @@ def _parse_list_multi(data):
     return [_parse_list_single(x) for x in sources]
 
 
-def _scrape_video_sources_id(id):
+def _scrape_video_sources_id(id, getMethod=requests.get):
     params = {
         'id': id,
     }
-    request = requests.get(DOWNLOAD_URL, params=params).content
+    request = getMethod(DOWNLOAD_URL, params=params).content
     data = BeautifulSoup(request, 'html.parser')
     return {
         'sources': _parse_list_multi(data),
@@ -111,8 +111,8 @@ def _parse_list_embed_multi(data):
     return [_parse_list_embed_single(x) for x in sources]
 
 
-def _scrape_video_embed(link):
-    data = BeautifulSoup(requests.get(link).content, 'html.parser')
+def _scrape_video_embed(link, getMethod=requests.get):
+    data = BeautifulSoup(getMethod(link).content, 'html.parser')
     result = {
         'sources': _parse_list_embed_multi(data),
     }

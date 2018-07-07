@@ -44,7 +44,7 @@ def _extract_multiple_search(data):
     return [_extract_single_search(x) for x in entries]
 
 
-def search(query):
+def search(query, getMethod=requests.get):
     '''
     Returns all search results based on a query
     [
@@ -57,7 +57,7 @@ def search(query):
     '''
     logging.info("A query for %s was made under animeheaven" % (query,))
     params = {'q': query}
-    data = requests.get(SEARCH_URL, params=params).content
+    data = getMethod(SEARCH_URL, params=params).content
     data = BeautifulSoup(data, 'html.parser')
 
     return _extract_multiple_search(data)
@@ -92,14 +92,14 @@ def _scrape_epNum(url):
     epNum = re.search(epnum_pat, url)
     return epNum.group().replace('e=', '') if epNum is not None else None
 
-def _parse_multi_video_sources(data):
-    return [_scrape_video_sources(x) for x in data]
+def _parse_multi_video_sources(data, getMethod=requests.get):
+    return [_scrape_video_sources(x, getMethod=getMethod) for x in data]
 
 
-def _scrape_video_sources(link):
+def _scrape_video_sources(link, getMethod=requests.get):
     # Scrapes details on a specific
     # episode of a show based on link
-    data = BeautifulSoup(requests.get(link).content)
+    data = BeautifulSoup(getMethod(link).content)
     logging.info("Scraping video sources for %s under animeheaven" % (link,))    # test = data.findall("div", {'class': 'centerf2'})
     sources = data.find("div", {'class': 'centerf2'}).findAll('script')
 
@@ -122,32 +122,32 @@ def _scrape_released(data):
     if len(box) < 1: return None
     box = box[1]
     released_date = re.search(released_pat, str(box))
-    return released_date.group() if released_date is not None else Noneß
+    return released_date.group() if released_date is not None else None
 
 
 def _scrape_status(data):
     # Takes in bs4 show page and
     # return status of the show
     box = data.findAll("div", {"class": "infodes2"})
-    if len(box) < 1: return Noneß
+    if len(box) < 1: return None
     box = box[1]
     status = re.search(status_pat, str(box))
     return status.group() if status is not None else None
 
 
-def scrape_all_show_sources(link):
+def scrape_all_show_sources(link, getMethod=requests.get):
     # Returns all show's sources and details
     # based on the link of the show.
     logging.info(
         "A request for '%s' was made to animeheaven scraper."
         % (link,)
     )
-    data = BeautifulSoup(requests.get(link).content, 'html.parser')
+    data = BeautifulSoup(getMethod(link).content, 'html.parser')
     episodes = _parse_list_multi(data)
     logging.debug("Got %i links for %s" % (len(episodes), link,))
 
     return {
-        'episodes': [_scrape_video_sources(x['link']) for x in episodes],
+        'episodes': [_scrape_video_sources(x['link'], getMethod=getMethod) for x in episodes],
         'title': _scrape_title(data),
         'status': _scrape_status(data),
         'host': 'animeheaven',

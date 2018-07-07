@@ -53,7 +53,7 @@ def _increment_link(link, increment):
     return link.replace('{{INCREMENT}}', '%04d' % (increment,))
 
 
-def download(link, fname, **passedArgs):
+def download(link, fname, getMethod=requests.get, **passedArgs):
     headers = {'Referer': link}
     # Downloads a file from MyCloud based on link and filename
     directLink = _get_direct_link(link, headers)
@@ -68,7 +68,7 @@ def download(link, fname, **passedArgs):
             newLink = _increment_link(directLink, increment)
             while True:
                 try:
-                    download = requests.get(newLink, stream=True, timeout=10, headers=headers)
+                    download = getMethod(newLink, stream=True, timeout=10, headers=headers)
                     break
                 except Exception as e:
                     logging.error(

@@ -99,3 +99,4 @@ ENV/
 anime-titles.xml.gz
 anime-titles.xml
 last_download.txt
+.vscode/*

@@ -4,6 +4,8 @@ import logging
 import os
 import re
 
+import requests
+
 from difflib import SequenceMatcher
 from .templates.module_search import ModuleSearch
 
@@ -29,7 +31,7 @@ class ScraperHandler(ModuleSearch):
 
     # Resolves a URL and returns data from
     # proper module and function
-    def resolve(self, link):
+    def resolve(self, link, getMethod=requests.get):
         logging.debug(
             "Starting a resolution for '%s'"
             "under scraper_handler." % (link,)
@@ -37,7 +39,7 @@ class ScraperHandler(ModuleSearch):
         for module in self.modules:
             functions = self._try_match_module(link, module)
             if len(functions) > 0:
-                return functions[0](link)
+                return functions[0](link, getMethod=getMethod)
         return None
 
 
